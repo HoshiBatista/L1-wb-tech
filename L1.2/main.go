@@ -8,13 +8,13 @@ import (
 func squareArrElements(arr []int, id int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	fmt.Printf("Gorutine %d start\n", id)
+	fmt.Printf("Goroutine %d start\n", id)
 
 	for idx, el := range arr {
 		arr[idx] = el * el
 	}
 	
-	fmt.Printf("Gorutine %d finish\n", id)
+	fmt.Printf("Goroutine %d finish\n", id)
 }
 
 func main() {
