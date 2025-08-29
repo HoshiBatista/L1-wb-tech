@@ -5,9 +5,9 @@ import (
 )
 
 type Human struct {
-	Name  	 string
-	Surname  string
-	Age		 int
+	Name    string
+	Surname string
+	Age     int
 }
 
 func (h *Human) Hello() {
@@ -19,19 +19,20 @@ func (h *Human) Old() {
 }
 
 type Action struct {
-	Counter int
 	Human
+
+	Counter int
 }
 
 func NewAction(cnt int, h Human) *Action {
 	return &Action{
 		Counter: cnt,
-		Human: h,
+		Human:   h,
 	}
 }
 
 func main() {
-	var act Action = *NewAction(0, Human{"Roman", "Moroz", 20}) 
+	var act = *NewAction(0, Human{"Roman", "Moroz", 20})
 
 	act.Hello()
 	act.Old()
