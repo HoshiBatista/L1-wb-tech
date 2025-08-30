@@ -13,7 +13,7 @@ func squareArrElements(arr []int, id int, wg *sync.WaitGroup) {
 	for idx, el := range arr {
 		arr[idx] = el * el
 	}
-	
+
 	fmt.Printf("Goroutine %d finish\n", id)
 }
 
@@ -27,7 +27,7 @@ func main() {
 
 	go squareArrElements(arr1, 1, &wg)
 	go squareArrElements(arr2, 2, &wg)
-	
+
 	wg.Wait()
 
 	fmt.Println(arr1)
