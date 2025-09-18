@@ -10,147 +10,147 @@ import (
 )
 
 func exitByCondition() {
-    fmt.Println("=== Выход по условию ===")
-    
-    var wg sync.WaitGroup
-    var stopFlag int32 
+	fmt.Println("=== Выход по условию ===")
 
-    wg.Add(1)
-    go func() {
-        defer wg.Done()
+	var wg sync.WaitGroup
+	var stopFlag int32
 
-        for atomic.LoadInt32(&stopFlag) == 0 {
-            fmt.Println("Горутина работает...")
-            time.Sleep(500 * time.Millisecond)
-        }
-        fmt.Println("Горутина завершена по условию ...")
-    }()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-    time.Sleep(2 * time.Second)
-    atomic.StoreInt32(&stopFlag, 1) 
-	
-    wg.Wait()
+		for atomic.LoadInt32(&stopFlag) == 0 {
+			fmt.Println("Горутина работает...")
+			time.Sleep(500 * time.Millisecond)
+		}
+		fmt.Println("Горутина завершена по условию ...")
+	}()
 
-    fmt.Println()
+	time.Sleep(2 * time.Second)
+	atomic.StoreInt32(&stopFlag, 1)
+
+	wg.Wait()
+
+	fmt.Println()
 }
 
 func exitByChannel() {
-    fmt.Println("=== Через канал уведомления ===")
-    
-    stopChan := make(chan struct{})
-    done := make(chan struct{})
+	fmt.Println("=== Через канал уведомления ===")
 
-    go func() {
-        defer close(done)
-        for {
-            select {
-            case <-stopChan:
-                fmt.Println("Горутина завершена по сигналу канала ...")
-                return
-            default:
-                fmt.Println("Горутина работает ...")
-                time.Sleep(500 * time.Millisecond)
-            }
-        }
-    }()
+	stopChan := make(chan struct{})
+	done := make(chan struct{})
 
-    time.Sleep(2 * time.Second)
+	go func() {
+		defer close(done)
+		for {
+			select {
+			case <-stopChan:
+				fmt.Println("Горутина завершена по сигналу канала ...")
+				return
+			default:
+				fmt.Println("Горутина работает ...")
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
 
-    close(stopChan) 
-    <-done          
+	time.Sleep(2 * time.Second)
 
-    fmt.Println()
+	close(stopChan)
+	<-done
+
+	fmt.Println()
 }
 
 func exitByContext() {
-    fmt.Println("=== Через контекст ===")
-    
-    ctx, cancel := context.WithCancel(context.Background())
-    done := make(chan struct{})
+	fmt.Println("=== Через контекст ===")
 
-    go func() {
-        defer close(done)
-        for {
-            select {
-            case <-ctx.Done():
-                fmt.Println("Горутина завершена по сигналу контекста ...")
-                return
-            default:
-                fmt.Println("Горутина работает...")
-                time.Sleep(500 * time.Millisecond)
-            }
-        }
-    }()
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
 
-    time.Sleep(2 * time.Second)
-	
-    cancel() 
-    <-done 
+	go func() {
+		defer close(done)
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("Горутина завершена по сигналу контекста ...")
+				return
+			default:
+				fmt.Println("Горутина работает...")
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
 
-    fmt.Println()
+	time.Sleep(2 * time.Second)
+
+	cancel()
+	<-done
+
+	fmt.Println()
 }
 
 func exitByRuntime() {
-    fmt.Println("=== Использование runtime.Goexit() ===")
-    
-    done := make(chan struct{})
+	fmt.Println("=== Использование runtime.Goexit() ===")
 
-    go func() {
-        defer close(done)
-        defer fmt.Println("Горутина завершена через runtime.Goexit() ...")
-        
-        for {
-            fmt.Println("Горутина работает...")
-            time.Sleep(500 * time.Millisecond)
-            
-            if time.Now().Unix() % 5 == 0 {
-                runtime.Goexit() 
-            }
-        }
-    }()
+	done := make(chan struct{})
 
-    <-done 
+	go func() {
+		defer close(done)
+		defer fmt.Println("Горутина завершена через runtime.Goexit() ...")
 
-    fmt.Println()
+		for {
+			fmt.Println("Горутина работает...")
+			time.Sleep(500 * time.Millisecond)
+
+			if time.Now().Unix()%5 == 0 {
+				runtime.Goexit()
+			}
+		}
+	}()
+
+	<-done
+
+	fmt.Println()
 }
 
 func exitByChannelClose() {
-    fmt.Println("=== Через закрытие канала данных ===")
-    
-    dataChan := make(chan int)
-    done := make(chan struct{})
+	fmt.Println("=== Через закрытие канала данных ===")
 
-    go func() {
-        defer close(done)
-        for {
-            select {
-            case data, ok := <-dataChan:
-                if !ok {
-                    fmt.Println("Горутина завершена после закрытия канала ...")
-                    return
-                }
+	dataChan := make(chan int)
+	done := make(chan struct{})
 
-                fmt.Printf("Получены данные: %d\n", data)
+	go func() {
+		defer close(done)
+		for {
+			select {
+			case data, ok := <-dataChan:
+				if !ok {
+					fmt.Println("Горутина завершена после закрытия канала ...")
+					return
+				}
 
-            default:
-                fmt.Println("Горутина работает...")
-                time.Sleep(500 * time.Millisecond)
-            }
-        }
-    }()
+				fmt.Printf("Получены данные: %d\n", data)
 
-    time.Sleep(2 * time.Second)
+			default:
+				fmt.Println("Горутина работает...")
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
 
-    close(dataChan) 
-    <-done      
-    
-    fmt.Println()
+	time.Sleep(2 * time.Second)
+
+	close(dataChan)
+	<-done
+
+	fmt.Println()
 }
 
 func main() {
-    exitByCondition()        // 1. Выход по условию
-    exitByChannel()          // 2. Через канал уведомления
-    exitByContext()          // 3. Через контекст
-    exitByRuntime()          // 4. Использование runtime.Goexit()
-    exitByChannelClose()     // 5. Через закрытие канала данных
+	exitByCondition()    // 1. Выход по условию
+	exitByChannel()      // 2. Через канал уведомления
+	exitByContext()      // 3. Через контекст
+	exitByRuntime()      // 4. Использование runtime.Goexit()
+	exitByChannelClose() // 5. Через закрытие канала данных
 }

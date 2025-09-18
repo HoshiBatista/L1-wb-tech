@@ -6,7 +6,7 @@ import (
 )
 
 type SafeMap struct {
-	mu  sync.RWMutex
+	mu      sync.RWMutex
 	safeMap map[string]interface{}
 }
 
@@ -59,7 +59,7 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -76,7 +76,7 @@ func main() {
 	wg.Wait()
 
 	fmt.Println("\nСодержимое map:")
-	
+
 	for _, key := range safeMap.Keys() {
 		if value, exists := safeMap.Get(key); exists {
 			fmt.Printf("%s: %s\n", key, value)
